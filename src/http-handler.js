@@ -103,6 +103,9 @@ export function createHTTPHandler(adapter) {
     try {
       if (adapter.waitForResponse) {
         adapter.emit('error', error, respond);
+      } if (error.code === errorCodes.SIGNATURE_VERIFICATION_FAILURE ||
+          error.code === errorCodes.REQUEST_TIME_FAILURE) {
+        respond({ status: 404 });
       } else if (process.env.NODE_ENV === 'development') {
         adapter.emit('error', error);
         respond({ status: 500 }, { content: error.message });
@@ -183,14 +186,7 @@ export function createHTTPHandler(adapter) {
           }
         }
       }).catch((error) => {
-        if (error.code === errorCodes.SIGNATURE_VERIFICATION_FAILURE ||
-          error.code === errorCodes.REQUEST_TIME_FAILURE) {
-          respond({ status: 404 });
-        } else if (process.env.NODE_ENV === 'development') {
-          respond({ status: 500, content: error.message });
-        } else {
-          respond({ status: 500 });
-        }
+        handleError(error, respond);
       });
   };
 }
