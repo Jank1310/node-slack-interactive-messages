@@ -49,7 +49,6 @@ describe('createHTTPHandler', function () {
   it('should fail request signing verification with an incorrect signing secret', function (done) {
     var res = this.res;
     var req = createRequest('INVALID_SECRET', this.correctDate, correctRawBody);
-    getRawBodyStub.resolves(correctRawBody);
     getRawBodyStub.resolves(Buffer.from(correctRawBody));
     res.end.callsFake(function () {
       assert.equal(res.statusCode, 404);
