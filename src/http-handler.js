@@ -101,17 +101,13 @@ export function createHTTPHandler(adapter) {
   function handleError(error, respond) {
     debug('handling error - message: %s, code: %s', error.message, error.code);
     try {
-      if (adapter.waitForResponse) {
-        adapter.emit('error', error, respond);
-      } if (error.code === errorCodes.SIGNATURE_VERIFICATION_FAILURE ||
+      if (error.code === errorCodes.SIGNATURE_VERIFICATION_FAILURE ||
           error.code === errorCodes.REQUEST_TIME_FAILURE) {
         respond({ status: 404 });
       } else if (process.env.NODE_ENV === 'development') {
-        adapter.emit('error', error);
         respond({ status: 500 }, { content: error.message });
       } else {
-        adapter.emit('error', error);
-        respond(error);
+        respond({ status: 500 }, { content: error.message });
       }
     } catch (userError) {
       process.nextTick(() => { throw userError; });
@@ -186,7 +182,14 @@ export function createHTTPHandler(adapter) {
           }
         }
       }).catch((error) => {
-        handleError(error, respond);
+        if (error.code === errorCodes.SIGNATURE_VERIFICATION_FAILURE ||
+            error.code === errorCodes.REQUEST_TIME_FAILURE) {
+          respond({ status: 404 });
+        } else if (process.env.NODE_ENV === 'development') {
+          respond({ status: 500, content: error.message });
+        } else {
+          respond({ status: 500 });
+        }
       });
   };
 }
