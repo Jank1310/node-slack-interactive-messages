@@ -87,10 +87,10 @@ describe('createHTTPHandler', function () {
   });
 
   it('should verify a correct signing secret for a request with rawBody attribute', function (done) {
-    var emit = this.emit;
+    var dispatch = this.dispatch;
     var res = this.res;
     var req = createRawBodyRequest(correctSigningSecret, this.correctDate, correctRawBody);
-    emit.resolves({ status: 200 });
+    dispatch.resolves({ status: 200 });
     getRawBodyStub.resolves(Buffer.from(correctRawBody));
     res.end.callsFake(function () {
       assert.equal(res.statusCode, 200);
