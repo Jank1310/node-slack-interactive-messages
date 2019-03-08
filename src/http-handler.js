@@ -105,9 +105,9 @@ export function createHTTPHandler(adapter) {
           error.code === errorCodes.REQUEST_TIME_FAILURE) {
         respond({ status: 404 });
       } else if (process.env.NODE_ENV === 'development') {
-        respond({ status: 500 }, { content: error.message });
+        respond({ status: 500, content: error.message });
       } else {
-        respond({ status: 500 }, { content: error.message });
+        respond({ status: 500 });
       }
     } catch (userError) {
       process.nextTick(() => { throw userError; });
