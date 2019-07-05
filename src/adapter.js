@@ -14,9 +14,6 @@ import { packageIdentifier, promiseTimeout, errorCodes as utilErrorCodes } from 
 
 const debug = debugFactory('@slack/interactive-messages:adapter');
 
-export const errorCodes = {
-  BODY_PARSER_NOT_PERMITTED: 'SLACKADAPTER_BODY_PARSER_NOT_PERMITTED_FAILURE',
-};
 
 /**
  * Transforms various forms of matching constraints to a single standard object shape
@@ -196,14 +193,7 @@ export class SlackMessageAdapter {
    */
   expressMiddleware() {
     const requestListener = this.requestListener();
-    return (req, res, next) => {
-      // If parser is being used, we can't verify request signature
-      if (req.body) {
-        const error = new Error('Parsing request body prohibits request signature verification');
-        error.code = errorCodes.BODY_PARSER_NOT_PERMITTED;
-        next(error);
-        return;
-      }
+    return (req, res) => {
       requestListener(req, res);
     };
   }
